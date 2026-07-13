@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    گلابو | ثبت نام
+{% endblock %}
+
+{% block content %}
+    <main>
+        <div class="container">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    {#                    <div class="auth-tab" data-tab="login">ورود</div>#}
+                    <div class="auth-tab" data-tab="register">ثبت‌نام</div>
+                </div>
+
+                {#                <div class="auth-form" id="login-form">#}
+                {#                    <div class="form-group">#}
+                {#                        <input type="text" placeholder="شماره موبایل یا ایمیل">#}
+                {#                    </div>#}
+                {#                    <div class="form-group">#}
+                {#                        <input type="password" placeholder="رمز عبور">#}
+                {#                    </div>#}
+                {#                    <button class="btn auth-btn">ورود به گلابو</button>#}
+                {#                    <div class="auth-note">#}
+                {#                        ورود با کد یکبارمصرف نیز امکان‌پذیر است#}
+                {#                    </div>#}
+                {#                </div>#}
+                <form method="post" action="{% url 'register_page' %}">
+                    {% csrf_token %}
+                    <div class="auth-form " id="register-form">
+                        <div class="form-group">
+                            {{ form.first_name }}
+                            {{ form.first_name.errors }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.last_name }}
+                            {{ form.last_name.errors }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.phone_number }}
+                            {{ form.phone_number.errors }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.email }}
+                            {{ form.email.errors }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.password }}
+                            {{ form.password.errors }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.confirm_password }}
+                            {{ form.confirm_password.errors }}
+                        </div>
+                        <button class="btn auth-btn">ثبت‌نام در گلابو</button>
+
+                        <div class="auth-note">
+                            با ثبت‌نام، شرایط و قوانین گلابو را می‌پذیرید
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+{% endblock %}

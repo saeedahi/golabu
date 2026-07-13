@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    گلابو|ورود
+{% endblock %}
+
+{% block content %}
+    <main>
+        <div class="container">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    {#                    <div class="auth-tab" data-tab="login">ورود</div>#}
+                    <div class="auth-tab" data-tab="verify">تایید کد ارسالی</div>
+                </div>
+
+                <form method="post" action="{% url 'login_page' %}">
+                    {% csrf_token %}
+                    <div class="auth-form " id="register-form">
+                        <div class="form-group">
+                            {{ login_form }}
+                            {{ verify_ph.errors }}
+                            <button class="btn auth-btn">ورود</button>
+
+                            <div class="auth-note">
+                                با ثبت‌نام، شرایط و قوانین گلابو را می‌پذیرید
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load persian_filters %}
+
+
+{% block title %}
+    گلابو | سبد خرید
+{% endblock %}
+
+
+{% block content %}
+    <main class="container" id="cart-detail">
+        {% include 'order_module/includes/cart_content.html' %}
+    </main>
+{% endblock %}

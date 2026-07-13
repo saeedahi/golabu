@@ -1,0 +1,52 @@
+{% load persian_filters %}
+
+<!-- کامنت 1 با ریپلای -->
+{% if comments %}
+    {% for comment in comments %}
+        <div class="comment-item">
+            <div class="comment-header" id="single-comment-box-{{ comment.id }}">
+                <strong>{{ comment.user }}</strong>
+                <span class="comment-date">{{ comment.created_at|to_shamsi }}</span>
+                {#                                                <div class="comment-rating">★★★★★</div>#}
+                <span class="reply-count">{{ comment.productcomment_set.all.count|to_persian_digits }} پاسخ</span>
+            </div>
+            <div class="comment-text">
+                {{ comment.comment }}
+            </div>
+
+            <!-- دکمه‌های عملیات -->
+            <div class="comment-actions">
+                <button class="reply-btn" onclick="fillParentID({{ comment.id }})">💬 پاسخ</button>
+                <button class="like-btn" onclick="likeComment({{ comment.id }}, 'products')">👍 {{ comment.likecomment_set.all.count|to_persian_digits }}</button>>
+            </div>
+
+            <!-- فرم ریپلای -->
+            <div class="reply-form-container">
+                <textarea rows="2" placeholder="پاسخ خود را بنویسید..."></textarea>
+                <div class="reply-actions">
+                    <button class="submit-reply">ثبت پاسخ</button>
+                    <button class="cancel-reply">لغو</button>
+                </div>
+            </div>
+
+            <!-- لیست ریپلای‌ها -->
+            {% if comment.productcomment_set %}
+                <div class="replies-container">
+                    {% for repComment in comment.productcomment_set.all %}
+                        <div class="reply-item">
+                            <div class="reply-to">پاسخ به
+                                <span>{{ comment.user }}</span></div>
+                            <div class="reply-header">
+                                <strong>{{ repComment.user }}</strong>
+                                <span class="reply-date">{{ repComment.created_at|to_shamsi }}</span>
+                            </div>
+                            <div class="reply-text">
+                                {{ repComment.comment }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% endif %}

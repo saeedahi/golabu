@@ -1,0 +1,49 @@
+{% load persian_filters %}
+
+<h3>💬 نظرات کاربران ({{ comments_count|to_persian_digits }})</h3>
+{% for maincomment in comments %}
+    <div class="blog-comment">
+        <div class="comment-avatar">👤</div>
+        <div class="comment-body">
+            <div class="comment-header" id="single-comment-box-{{ maincomment.id }}">
+                <strong>{{ maincomment.user }}</strong>
+                <span class="comment-date">{{ maincomment.create_date|to_shamsi }}</span>
+                <span class="reply-count">{{ maincomment.articlecomments_set.all.count|to_persian_digits }} پاسخ</span>
+            </div>
+            <p>{{ maincomment.comment }}</p>
+
+            <div class="comment-actions">
+                <button class="reply-btn" onclick="fillParentID({{ maincomment.id }})">💬 پاسخ</button>
+                <button class="like-btn" onclick="likeComment({{ maincomment.id }})">
+                    👍 <span id="like-count-{{ maincomment.id }}">
+                            {{ maincomment.commentlike_set.count|to_persian_digits }}
+                    </span>
+                </button>
+            </div>
+
+            <div class="reply-form-container">
+                <textarea rows="2" placeholder="پاسخ خود را بنویسید..."></textarea>
+                <div class="reply-actions">
+                    <button class="submit-reply">ثبت پاسخ</button>
+                    <button class="cancel-reply">لغو</button>
+                </div>
+            </div>
+
+            {% for replycomment in maincomment.articlecomments_set.all %}
+                <div class="replies-container" id="single-comment-box-{{ maincomment.id }}">
+                    <div class="reply-item">
+                        <div class="reply-to">پاسخ به <span>{{ maincomment.user }}</span></div>
+                        <div class="reply-header">
+                            <strong>{{ replycomment.user }}</strong>
+                            <span class="reply-date">{{ replycomment.create_date|to_shamsi }}</span>
+                        </div>
+                        <div class="reply-text">{{ replycomment.comment }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+
+        </div>
+    </div>
+{% endfor %}

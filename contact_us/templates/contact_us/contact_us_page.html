@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load persian_filters %}
+
+{% block title %}
+    گلابو | ارتباط با ما
+{% endblock %}
+
+{% block content %}
+    <main class="container">
+        <h2 class="page-title">📞 ارتباط با گلابو</h2>
+
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h3>اطلاعات تماس</h3>
+                <div class="contact-detail">
+                    <div class="contact-icon">📍</div>
+                    <div>{{ site_settings.address }}</div>
+                </div>
+                <div class="contact-detail">
+                    <div class="contact-icon">📞</div>
+                    <div>{{ site_settings.phone|to_persian_digits }}+</div>
+                </div>
+                <div class="contact-detail">
+                    <div class="contact-icon">📧</div>
+                    <div>{{ site_settings.email }}</div>
+                </div>
+                {#                <div class="contact-detail">#}
+                {#                    <div class="contact-icon">🕒</div>#}
+                {#                    <div>شنبه تا چهارشنبه: ۹ تا ۱۸<br>پنجشنبه: ۹ تا ۱۳</div>#}
+                {#                </div>#}
+            </div>
+            <form action="{% url 'contact_us_page' %}" method="post">
+                <div class="contact-form">
+                    {% csrf_token %}
+                    <h3>ارسال پیام</h3>
+                    {{ contact_form }}
+                    <button class="btn">ارسال پیام</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="map-container">
+            <h3>موقعیت ما روی نقشه</h3>
+            <div class="fake-map">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d730.2419054557806!2d48.263819532035825!3d34.972958735878024!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2s!4v1783174702413!5m2!1sen!2s"
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            </div>
+        </div>
+    </main>
+{% endblock %}

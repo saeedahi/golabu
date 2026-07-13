@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load render_partial %}
+
+{% block title %}
+    گلابو | ویرایش اطلاعات
+{% endblock %}
+
+{% block content %}
+    <main>
+        <div class="container">
+            <div class="profile-container">
+                <!-- هدر پروفایل -->
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <div class="avatar-placeholder">👤</div>
+                        <label class="avatar-upload-btn">
+                            📷
+                            <input type="file" accept="image/*" id="avatarUpload">
+                        </label>
+                    </div>
+                    <h2>کاربر گلابو</h2>
+                    <p>ویرایش اطلاعات شخصی خود را مدیریت کنید</p>
+                </div>
+
+                <!-- پیام‌های موفقیت و خطا -->
+                <div class="profile-success" id="profileSuccess">
+                    ✅ اطلاعات شما با موفقیت به‌روزرسانی شد!
+                </div>
+                <div class="profile-error" id="profileError">
+                    ❌ خطا در به‌روزرسانی اطلاعات. لطفاً مجدداً تلاش کنید.
+                </div>
+
+                <!-- تب‌ها -->
+                <div class="profile-tabs" name="tabs">
+                    <button class="profile-tab {% if active_tab == 'info' or not active_tab %} active {% endif %}"
+                            data-tab="info" value="info">اطلاعات
+                        شخصی
+                    </button>
+                    <button class="profile-tab {% if active_tab == 'password' %}active{% endif %}" data-tab="password"
+                            value="password">
+                        تغییر رمز عبور
+                    </button>
+                    <button class="profile-tab {% if active_tab == 'address' %}active{% endif %}" data-tab="address" value="address">آدرس و تماس</button>
+                </div>
+
+                <!-- تب اطلاعات شخصی -->
+                <div class="profile-tab-content {% if active_tab == 'info' or not active_tab %} active {% endif %}"
+                     id="tab-info">
+                    {% if edit_form.errors %}
+                        <div class="alert alert-danger">
+                            <strong>خطاهای فرم:</strong>
+                            <ul>
+                                {% for field in edit_form %}
+                                    {% for error in field.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+
+                                {% for error in edit_form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    <form action="{% url 'edit_info_page' %}" class="profile-form" id="infoForm" method="post">
+                        {#                        {{ edit_form }}#}
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>{{ edit_form.first_name.label }}</label>
+                                {{ edit_form.first_name }}
+                                {#                                <input type="text" placeholder="نام خود را وارد کنید" value="کاربر گلابو">#}
+                            </div>
+                            <div class="form-group">
+                                <label>{{ edit_form.last_name.label }}</label>
+                                {{ edit_form.last_name }}
+                                {#                                <input type="text" placeholder="نام کاربری" value="golabo_user">#}
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>{{ edit_form.username.label }}</label>
+                                {{ edit_form.username }}
+                            </div>
+                            <div class="form-group">
+                                <label>{{ edit_form.email.label }}</label>
+                                {{ edit_form.email }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>{{ edit_form.phone_number.label }}</label>
+                            {{ edit_form.phone_number }}
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn" id="saveInfoBtn">💾 ذخیره تغییرات</button>
+                            <button type="button" class="btn-light" id="cancelInfoBtn">انصراف</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- تب تغییر رمز عبور -->
+
+                <div class="profile-tab-content {% if active_tab == 'password' %}active{% endif %}" id="tab-password">
+                    {% if change_pass_form.errors %}
+                        <div class="alert alert-danger">
+                            <strong>خطاهای فرم:</strong>
+                            <ul>
+                                {% for field in change_pass_form %}
+                                    {% for error in field.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+
+                                {% for error in change_pass_form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    <form action="{% url 'change_pass_page' %}" class="profile-form" id="passwordForm" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>{{ change_pass_form.old_password.label }}</label>
+                            {{ change_pass_form.old_password }}
+                            {#                            {{ change_pass_form.old_password.errors }}#}
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ change_pass_form.new_password.label }}</label>
+                            {{ change_pass_form.new_password }}
+                            {#                            {{ change_pass_form.new_password.errors }}#}
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ change_pass_form.new_password_confirm.label }}</label>
+                            {{ change_pass_form.new_password_confirm }}
+                            {#                            {{ change_pass_form.new_password_confirm.errors }}#}
+                        </div>
+
+                        <div class="password-requirements">
+                            <small>رمز عبور باید حداقل شامل:</small>
+                            <ul>
+                                <li id="length">❌ ۸ کاراکتر یا بیشتر</li>
+                                <li id="uppercase">❌ حداقل یک حرف بزرگ</li>
+                                <li id="number">❌ حداقل یک عدد</li>
+                                <li id="special">❌ حداقل یک کاراکتر خاص (!@#$%^&*)</li>
+                                <li id="match">❌ تکرار رمز عبور یکسان باشد</li>
+                            </ul>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn" id="savePasswordBtn">🔑 تغییر رمز عبور</button>
+                            <button type="button" class="btn-light" id="cancelPasswordBtn">انصراف</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- تب آدرس و تماس -->
+                <div class="profile-tab-content {% if active_tab == 'address' %}active{% endif %}" id="tab-address">
+                    <form class="profile-form" id="addressForm" method="post" action="{% url 'edit_address_page' %}">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>استان</label>
+                                {#                                {{ address_form.province }}#}
+                                <select name="province"
+                                        id="province"
+                                        class="form-control"
+                                        hx-get="{% url 'edit_counties' %}"
+                                        hx-target="#county"
+                                        hx-trigger="change"
+                                        hx-include="[name='province']">
+                                    <option value="">استان خود را انتخاب کنید</option>
+
+                                    {% for province in address_form.fields.province.queryset %}
+                                        <option value="{{ province.id }}">
+                                            {{ province.name }}
+                                        </option>
+                                    {% endfor %}
+
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>شهرستان</label>
+                                <select name="county" id="county" class="form-control">
+                                    <option value="">ابتدا استان را انتخاب کنید</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>{{ address_form.district.label }}</label>
+                                {{ address_form.district }}
+                            </div>
+
+                            <div class="form-group">
+                                <label>{{ address_form.street.label }}</label>
+                                {{ address_form.street }}
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>{{ address_form.building.label }}</label>
+                                {{ address_form.building }}
+                            </div>
+
+                            <div class="form-group">
+                                <label>{{ address_form.number_plate.label }}</label>
+                                {{ address_form.number_plate }}
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>{{ address_form.postal_code.label }}</label>
+                                {{ address_form.postal_code }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ address_form.full_address.label }}</label>
+                            {{ address_form.full_address }}
+                        </div>
+
+{#                        <div class="form-row">#}
+{#                            <div class="form-group">#}
+{#                                <label>کد پستی</label>#}
+{#                                <input type="text" placeholder="کد پستی" value="۶۵۳۴۱۲۳۴۵۶">#}
+{#                            </div>#}
+{#                            <div class="form-group">#}
+{#                                <label>تلفن ثابت</label>#}
+{#                                <input type="text" placeholder="تلفن ثابت" value="۰۸۱-۳۲۲۲۳۳۴۴">#}
+{#                            </div>#}
+{#                        </div>#}
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn" id="saveAddressBtn">💾 ذخیره آدرس</button>
+                            <button type="button" class="btn-light" id="cancelAddressBtn">انصراف</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

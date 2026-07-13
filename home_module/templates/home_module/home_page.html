@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load persian_filters %}
+
+{% block title %}
+    گلابو | خانه عطر و گلاب ناب
+{% endblock %}
+
+{% block content %}
+    <main>
+        <div class="container" style="padding: 20px 0;">
+            <section class="hero-section">
+                <h1 class="hero-title">گلابو</h1>
+                <p class="hero-subtitle">عطر ناب گلاب محمدی از دل کویر ایران</p>
+                <div class="hero-buttons">
+                    <a href="{% url 'products_list_page' %}" class="btn">✨ خرید کنید</a>
+                    <a href="{% url 'articles_page' %}" class="btn btn-light"><i class="fa-solid fa-book-open"></i> خواندن مقالات</a>
+                </div>
+            </section>
+
+            <section class="features-section">
+                <h2 class="section-title">چرا گلابو؟</h2>
+                <div class="features-grid">
+                    <div class="feature-card" id="card1">
+                        <div class="feature-icon">💧</div>
+                        <div class="feature-text">۱۰۰٪ خالص</div>
+                    </div>
+                    <div class="feature-card" id="card2">
+
+                        <div class="feature-icon">🌿</div>
+                        <div class="feature-text">دست‌چین از باغ</div>
+                    </div>
+                    <div class="feature-card" id="card3">
+                        <div class="feature-icon">🚚</div>
+                        <div class="feature-text">ارسال به سراسر کشور</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="products-section">
+                <h2 class="section-title">🔥 محبوب‌ترین محصولات</h2>
+                <!-- نشانگر اسکرول برای موبایل -->
+                <div class="scroll-indicator">
+                    <span>👉 برای دیدن محصولات بیشتر به چپ و راست بکشید 👈</span>
+                </div>
+
+                <!-- فلش‌های اسکرول -->
+                <button class="scroll-btn scroll-btn-left" id="scrollLeft">❯</button>
+                <button class="scroll-btn scroll-btn-right" id="scrollRight">❮</button>
+
+                <div class="products-grid">
+                    <!-- محصول پرفروش 1 -->
+                    {% for product in products %}
+                        <div class="product-card" data-product-id="{{ product.id }}">
+                            <div class="product-img"><a href="{% url 'product_detail_page' slug=product.slug %}"><img
+                                    src="{{ product.image.url }}" alt=""></a></div>
+                            <div class="product-info">
+                                <a href="{% url 'product_detail_page' slug=product.slug %}">
+                                <h3>{{ product.name }}</h3>
+                                <p>{{ product.short_description }}</p>
+                                <div class="price">{{ product.price|to_persian_digits }} تومان</div></a>
+                                <button class="btn-light add-to-cart-btn" data-id="{{ product.id }}"
+                                        data-name="{{ product.name }}"
+                                        data-price="{{ product.price }}" data-img="{{ product.image.url }}">➕ افزودن به
+                                    سبد
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                </div>
+            </section>
+        </div>
+    </main>
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load persian_filters %}
+
+{% block title %}
+    گلابو | جستجو برای {{ result }}
+{% endblock %}
+
+{% block content %}
+
+    <main class="container products-page">
+        <h2 class="page-title">نتابج جستجو برای {{ result }}</h2>
+
+        <!-- بخش فیلتر و مرتب‌سازی -->
+{#        <div class="filter-section">#}
+{#            <form method="get" class="filters-form">#}
+{#                <span class="filter-label">📂 دسته‌بندی:</span>#}
+{##}
+{#                <select name="category" class="filter-select" onchange="this.form.submit()">#}
+{#                    <option value="">همه محصولات</option>#}
+{##}
+{#                    {% for cat in categories %}#}
+{#                        <option value="{{ cat.slug }}" {% if request.GET.category == cat.slug %}selected{% endif %}>#}
+{#                            {{ cat.name }}#}
+{#                        </option>#}
+{#                    {% endfor %}#}
+{#                </select>#}
+{##}
+{##}
+{#                <div class="filter-group">#}
+{#                    <span class="filter-label">📊 مرتب‌سازی:</span>#}
+{#                    <select name="sort" class="filter-select" onchange="this.form.submit()">#}
+{#                        <option  {% if not request.GET.sort  %}selected{% endif %}>-----#}
+{#                        </option>#}
+{#                        <option value="price-low" {% if request.GET.sort == "price-low" %}selected{% endif %}>از#}
+{#                            ارزانترین#}
+{#                        </option>#}
+{#                        <option value="price-high" {% if request.GET.sort == "price-high" %}selected{% endif %}>از#}
+{#                            گرانترین#}
+{#                        </option>#}
+{#                        <option value="name" {% if request.GET.sort == "name" %}selected{% endif %}>نام محصول</option>#}
+                        {#                        <option value="most-view" {% if request.GET.sort == "most-view" %}selected{% endif %}>پربازدیدترین</option>#}
+{#                    </select>#}
+{#                </div>#}
+{#            </form>#}
+
+            {#            <div class="filter-group">#}
+            {#                <div class="filter-search-box">#}
+            {#                    <input type="text" id="filterSearchInput" placeholder="جستجو در محصولات...">#}
+            {#                    <span class="search-icon">🔍</span>#}
+            {#                </div>#}
+            {#            </div>#}
+
+            {#            <div class="filter-buttons">#}
+            {#                <button class="filter-btn active" data-filter="all">همه</button>#}
+            {#                <button class="filter-btn" data-filter="گلاب">🌹 گلاب</button>#}
+            {#                <button class="filter-btn" data-filter="عرقیات">🍃 عرقیات</button>#}
+            {#            </div>#}
+
+            <div class="filter-result-count">
+                نمایش <span id="productCount">{{ paginator.count }}</span> محصول
+            </div>
+        </div>
+
+        <!-- لیست محصولات -->
+        <div class="products-grid" id="productsGrid">
+            <!-- محصول 1 -->
+            {% for product in products %}
+                <div class="product-card" data-product-id="{{ product.id }}" data-category="{{ product.category.name }}"
+                     data-name="{{ product.name }}"
+                     data-price="{{ product.price }}">
+                    <div class="product-img">
+                        <a href="{% url 'product_detail_page' slug=product.slug %}">
+                            <img src="{{ product.image.url }}" alt="">
+                        </a>
+                    </div>
+                    <div class="product-info">
+                        <h3>{{ product.name }}</h3>
+                        <p>{{ product.short_description }}</p>
+                        <div class="price">{{ product.price|to_persian_digits }} تومان</div>
+                        <button class="btn-light add-to-cart-btn" data-id="{{ product.id }}"
+                                data-name="{{ product.name }}"
+                                data-price="{{ product.price }}"
+                                data-img="🌹">➕ افزودن به سبد
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <br>
+        <div>
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    {% if request.GET.sort and request.GET.category %}
+                        <a href="?q={{ result }}&category={{ request.GET.category }}&sort={{ request.GET.sort }}&page={{ page_obj.previous_page_number }}">&laquo;</a>
+                    {% elif request.GET.sort %}
+                        <a href="?q={{ result }}&sort={{ request.GET.sort }}&page={{ page_obj.previous_page_number }}">&laquo;</a>
+                    {% elif request.GET.category %}
+                        <a href="?q={{ result }}&category={{ request.GET.category }}&page={{ page_obj.previous_page_number }}">&laquo;</a>
+                    {% else %}
+                        <a href="?q={{ result }}&page={{ page_obj.previous_page_number }}">&laquo;</a>
+                    {% endif %}
+                    {#                    <a href="?category={{ request.GET.category }}&sort={{ request.GET.sort }}&page={{ page_obj.previous_page_number }}">&laquo;</a>#}
+                {% endif %}
+                {% for page_number in paginator.page_range %}
+                    {% if request.GET.sort and request.GET.category %}
+                        <a href="?q={{ result }}&category={{ request.GET.category }}&sort={{ request.GET.sort }}&page={{ page_number }}"
+                           class="{% if page_obj.number == page_number %}active{% endif %}">{{ page_number }}</a>
+                    {% elif request.GET.sort %}
+                        <a href="?q={{ result }}sort={{ request.GET.sort }}&page={{ page_number }}"
+                           class="{% if page_obj.number == page_number %}active{% endif %}">{{ page_number }}</a>
+                    {% elif request.GET.category %}
+                        <a href="?q={{ result }}&category={{ request.GET.category }}&page={{ page_number }}"
+                           class="{% if page_obj.number == page_number %}active{% endif %}">{{ page_number }}</a>
+                    {% else %}
+                        <a href="?q={{ result }}&page={{ page_number }}"
+                           class="{% if page_obj.number == page_number %}active{% endif %}">{{ page_number }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                    {% if request.GET.sort and request.GET.category %}
+                        <a href="?q={{ result }}&category={{ request.GET.category }}&sort={{ request.GET.sort }}&page={{ page_obj.next_page_number }}">&raquo;</a>
+                    {% elif request.GET.sort %}
+                        <a href="?q={{ result }}&sort={{ request.GET.sort }}&page={{ page_obj.next_page_number }}">&raquo;</a>
+                    {% elif request.GET.category %}
+                        <a href="?q={{ result }}&category={{ request.GET.category }}&page={{ page_obj.next_page_number }}">&raquo;</a>
+                        {% else %}
+                        <a href="?q={{ result }}&page={{ page_obj.next_page_number }}">&raquo;</a>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </div>
+
+
+    </main>
+{% endblock %}

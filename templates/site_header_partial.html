@@ -1,0 +1,40 @@
+<header class="main-header">
+    <div class="container header-flex">
+        <div class="logo-area">
+            <div class="logo-img"><a href="{% url 'home-page' %}"><img src="{{ main_setting.site_logo.url }}"
+                                                                       alt=""></a></div>
+            {#            <div class="logo-text">گلابو</div>#}
+        </div>
+
+        <div class="search-wrapper">
+            <div class="search-form">
+                <form action="{% url 'search_result_page' %}" method="get">
+                    <input type="text" class="search-input" id="searchInput" placeholder="جستجوی محصولات..." name="q" value="{{ request.GET.q }}">
+                    <button class="search-btn" id="searchBtn" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </form>
+                <div class="search-results" id="searchResults"></div>
+            </div>
+        </div>
+
+        <button class="nav-toggle" id="navToggle">☰</button>
+
+        <ul class="nav-menu" id="navMenu">
+            <li><a href="{% url 'home-page' %}">خانه</a></li>
+            <li><a href="{% url 'products_list_page' %}">محصولات</a></li>
+            <li><a href="{% url 'articles_page' %}">مقالات</a></li>
+            <li><a href="{% url 'contact_us_page' %}">ارتباط با ما</a></li>
+            {% if request.user.is_authenticated %}
+                <li><a href="{% url 'profile_page' %}"><i class="fa-solid fa-user"></i></a></li>
+                <li><a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i></a></li>
+            {% else %}
+                <li><a href="{% url "register_page" %}"><i class="fa-solid fa-user-plus"></i></a></li>
+                <li><a href="{% url "login_page" %}"><i class="fa-solid fa-right-to-bracket"></i></a></li>
+            {% endif %}
+            {#            <li><a href="auth.html">ورود/ثبت‌نام</a></li>#}
+        </ul>
+
+        <div class="cart-badge" id="cartBadge">
+            <a href="{% url 'cart_page' %}"><i class="fa-solid fa-cart-shopping"></i> <span id="cartCountNav">0</span></a>
+        </div>
+    </div>
+</header>

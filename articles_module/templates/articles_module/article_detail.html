@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% load persian_filters %}
+
+{% block title %}
+    گلابو | {{ article.title }}
+{% endblock %}
+
+{% block content %}
+    <main class="container">
+        <article class="blog-detail-wrapper">
+            <div class="blog-breadcrumb">
+                <a href="{% url 'home-page' %}">خانه</a> /
+                <a href="{% url 'articles_page' %}">مقالات</a> /
+                <span>{{ article.title }}</span>
+            </div>
+
+            <div class="blog-detail-header">
+                <div class="blog-detail-category">🌹{{ article.category }}</div>
+                <h1 class="blog-detail-title">{{ article.title }}</h1>
+                <div class="blog-detail-meta">
+                <span class="blog-detail-author">
+                    <span class="avatar">👤</span>
+                    {{ article.author }}
+                </span>
+                    <span class="blog-detail-date">📅 {{ article.created_at|to_shamsi }}</span>
+                    <span class="blog-detail-read-time">⏱️ {{ article.reading_time|to_persian_digits }} دقیقه مطالعه</span>
+                    <span class="blog-detail-views">👁️ {{ article.articlevisit_set.count|to_persian_digits }} بازدید</span>
+                </div>
+            </div>
+
+            <div class="blog-detail-image">
+                <img src="{{ article.image.url }}" alt="{{ article.title }}">
+                <div class="blog-detail-img-content">
+
+                </div>
+            </div>
+
+            <div class="blog-detail-content">
+                <div class="toc">
+
+                    <h3>
+                        فهرست مطالب
+                    </h3>
+
+                    <ul>
+
+
+                        {% for item in toc %}
+
+                            <li class="{{ item.level }}">
+
+                                <a href="#{{ item.id }}">
+                                    {{ item.title }}
+                                </a>
+
+                            </li>
+
+                        {% endfor %}
+
+                    </ul>
+
+                </div>
+
+                {{ article.content|safe }}
+
+                <div class="blog-detail-tags">
+                    <span>برچسب‌ها:</span>
+                    {% for tag in article.tag.all %}
+                        <a href="{% url 'article_tag_page' tag=tag.in_url %}" class="tag">#{{ tag }}</a>
+                    {% endfor %}
+                </div>
+
+                <div class="blog-detail-share">
+                    <span>اشتراک‌گذاری:</span>
+                    <a href="#" class="share-link">📘</a>
+                    <a href="#" class="share-link"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="share-link"><i class="fa-brands fa-telegram"></i></a>
+                </div>
+
+                <div class="blog-author-box">
+                    <div class="author-avatar">👤</div>
+                    <div class="author-info">
+                        <h4>{{ article.author }}</h4>
+                        <p>نویسنده و کارشناس ارشد طب سنتی. علاقه‌مند به گیاهان دارویی و خواص طبیعی گلاب و عرقیات.</p>
+                    </div>
+                </div>
+
+                <!-- بخش نظرات در blog-detail.html -->
+                <div class="blog-comments-section">
+                    <div id="comments_area">
+                        <h3>💬 نظرات کاربران ({{ comments_count|to_persian_digits }})</h3>
+                        {% for maincomment in comments %}
+                            <div class="blog-comment">
+                                <div class="comment-avatar">👤</div>
+                                <div class="comment-body">
+                                    <div class="comment-header" id="single-comment-box-{{ maincomment.id }}">
+                                        <strong>{{ maincomment.user }}</strong>
+                                        <span class="comment-date">{{ maincomment.create_date|to_shamsi }}</span>
+                                        <span class="reply-count">{{ maincomment.articlecomments_set.all.count|to_persian_digits }} پاسخ</span>
+                                    </div>
+                                    <p>{{ maincomment.comment }}</p>
+
+                                    <div class="comment-actions">
+                                        <button class="reply-btn" onclick="fillParentID({{ maincomment.id }})">💬 پاسخ
+                                        </button>
+                                        <button class="like-btn" onclick="likeComment({{ maincomment.id }}, 'blog')">
+                                            👍 <span id="like-count-{{ maincomment.id }}">
+                                                {{ maincomment.commentlike_set.count|to_persian_digits }}
+                                                </span>
+                                        </button>
+                                    </div>
+
+                                    <div class="reply-form-container">
+                                        <textarea rows="2" placeholder="پاسخ خود را بنویسید..."></textarea>
+                                        <div class="reply-actions">
+                                            <button class="submit-reply">ثبت پاسخ</button>
+                                            <button class="cancel-reply">لغو</button>
+                                        </div>
+                                    </div>
+
+                                    {% for replycomment in maincomment.articlecomments_set.all %}
+                                        <div class="replies-container" id="single-comment-box-{{ replycomment.id }}">
+                                            <div class="reply-item">
+                                                <div class="reply-to">پاسخ به <span>{{ maincomment.user }}</span></div>
+                                                <div class="reply-header">
+                                                    <strong>{{ replycomment.user }}</strong>
+                                                    <span class="reply-date">{{ replycomment.create_date|to_shamsi }}</span>
+                                                </div>
+                                                <div class="reply-text">{{ replycomment.comment }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+
+
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <form method="post" id="comment-form">
+                        {% if request.user.is_authenticated %}
+                            <!-- فرم ثبت نظر جدید -->
+{#                            <input type="hidden" id="parent_id" value="">#}
+                            {#                            <input type="hidden" id="user_id" value="{{ request.user.id }}">#}
+                            {#                            <input type="hidden" id="">#}
+                            <div class="blog-add-comment">
+                                <h4>نظر خود را بنویسید</h4>
+                                {#                        <textarea id="blogComment" rows="3" placeholder="نظر خود را بنویسید..."></textarea>#}
+                                {% csrf_token %}
+                                <input type="hidden" id="parent_id" value="">
+                                {{ comment_form.comment }}
+                                <button type="button" class="btn-light" onclick="addComment({{ article.id }})">ثبت نظر
+                                </button>
+                            </div>
+
+                        {% else %}
+                            <div class="blog-add-comment">
+                                <p>برای ثبت نظر ابتدا <a href="{% url 'login_page' %}">وارد</a> شوید</p>
+                            </div>
+                        {% endif %}
+                    </form>
+                    <!-- فرم ثبت نظر جدید -->
+                    {#                    <div class="blog-add-comment">#}
+                    {#                        <h4>نظر خود را بنویسید</h4>#}
+                    {#                        <textarea id="blogComment" rows="3" placeholder="نظر خود را بنویسید..."></textarea>#}
+                    {#                        {% csrf_token %}#}
+                    {#                        <input type="hidden" id="parent_id" value="">#}
+                    {#                        {{ comment_form.comment }}#}
+                    {#                        <button class="btn-light" onclick="addComment({{ article.id }})">ثبت نظر</button>#}
+                    {#                    </div>#}
+
+                </div>
+                {% if other_articles_author %}
+                    <div class="related-blogs">
+                        <h2 class="section-title">📚 دیگر مقالات {{ article.author }}</h2>
+                        <div class="blog-grid">
+                            {% for articleA in other_articles_author %}
+                                <article class="blog-card"
+                                         onclick="location.href='{% url "article_detail_page" slug=articleA.slug %}'">
+                                    <div class="blog-image">
+                                        <img src="{{ articleA.image.url }}" alt="">
+                                    </div>
+                                    <div class="blog-content">
+                                        <span class="blog-category">{{ articleA.category }}</span>
+                                        <h3 class="blog-title">{{ articleA.title }}</h3>
+                                        <div class="blog-meta">
+                                            <span>⏱️ {{ articleA.reading_time }} دقیقه مطالعه</span>
+                                            <a href="{% url 'article_detail_page' slug=articleA.slug %}"
+                                               class="read-more">بیشتر بخوانید ←</a>
+                                        </div>
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </article>
+    </main>
+
+{% endblock %}

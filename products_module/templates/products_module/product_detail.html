@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load persian_filters %}
+
+{% block title %}
+    {{ product.name }}
+{% endblock %}
+
+{% block header_references %}
+	<link rel="stylesheet" href="{% static 'lib/img-lightbox/css/lightbox.min.css' %}">
+{% endblock %}
+
+{% block content %}
+    <main class="container">
+        <div class="product-detail-wrapper">
+            <div class="product-detail-grid">
+                <div class="product-detail-gallery">
+                    <div class="main-image">
+                        <a href="{{ product.image.url }}" data-lightbox="product-image"><img src="{{ product.image.url }}" alt="{{ product.name }}"></a>
+                    </div>
+                    <div class="product-badges">
+                        {% if product.is_available %}
+                            <span class="badge in-stock">موجود در انبار</span>
+                        {% else %}
+                            <span class="badge out-of-stock">ناموجود</span>
+                        {% endif %}
+                        {#                        <span class="badge active">فعال</span>#}
+                    </div>
+                </div>
+
+                <div class="product-detail-info">
+                    <div class="product-breadcrumb">
+                        <a href="{% url 'home-page' %}">خانه</a> /
+                        <a href="{% url 'products_list_page' %}">محصولات</a> /
+                        <span>{{ product.name }}</span>
+                    </div>
+
+                    <h1 class="product-detail-title">{{ product.name }}</h1>
+
+                    <div class="product-rating">
+                        {#                        <div class="stars">★★★★★</div>#}
+                        <span class="rating-count">({{ comments.count|to_persian_digits }} نظر)</span>
+                    </div>
+
+                    <div class="product-short-desc">
+                        <p>{{ product.short_description }}</p>
+                    </div>
+
+                    <div class="product-price-section">
+                        <div class="product-price">{{ product.price|to_persian_digits }} تومان</div>
+                        <div class="product-installment">
+                            <small>قیمت نقدی</small>
+                        </div>
+                    </div>
+
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">برند:</span>
+                            <span class="meta-value">{{ product.brand }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">دسته‌بندی:</span>
+                            <span class="meta-value">{{ product.category }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">وضعیت:</span>
+                            {% if product.is_available %}
+                                <span class="meta-value text-success">موجود</span>
+                            {% else %}
+                                <span class="meta-value text-danger">ناموجود</span>
+                            {% endif %}
+
+                        </div>
+                        {#                        <div class="meta-item">#}
+                        {#                            <span class="meta-label">کد محصول:</span>#}
+                        {#                            <span class="meta-value">GLB-1234</span>#}
+                        {#                        </div>#}
+                    </div>
+
+                    <div class="product-actions">
+                        <div class="quantity-selector">
+                            <button class="qty-btn qty-decrease">-</button>
+                            <input type="number" class="product-quantity" value="1" min="1" max="99" id="product_count">
+                            <button class="qty-btn qty-increase">+</button>
+                        </div>
+{#                        <button class="btn btn-add-to-cart" id="detailAddToCart"#}
+{#                                data-id="{{ product.id }}"#}
+{#                                data-name="{{ product.name }}"#}
+{#                                data-price="{{ product.price }}"#}
+{#                                data-img="{{ product.image.url }}">#}
+{#                            🛒 افزودن به سبد خرید#}
+{#                        </button>#}
+                        <button onclick="addProductToOrder({{ product.id }})" class="btn btn-add-to-cart">افزودن به سبد خرید</button>
+                    </div>
+
+                    <div class="product-share">
+                        <span>اشتراک‌گذاری:</span>
+                        <a href="#" class="share-link">📘</a>
+                        <a href="#" class="share-link">📷</a>
+                        <a href="#" class="share-link">💬</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-description-tabs">
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="description">توضیحات</button>
+                    <button class="tab-btn" data-tab="specifications">مشخصات</button>
+                    <button class="tab-btn" data-tab="reviews">نظرات کاربران</button>
+                </div>
+
+                <div class="tabs-content">
+                    <div class="tab-pane active" id="description">
+                        <div class="full-description">
+                            {{ product.descriptions|linebreaks }}
+{#                            <p>گلاب ناب ممتاز گلابو، از بهترین گل‌های محمدی کاشان تهیه شده است. این گلاب به روش سنتی دو#}
+{#                                آتیشه و با بالاترین کیفیت تولید می‌شود.</p>#}
+{#                            <p>خواص این گلاب عبارتند از:<br>#}
+{#                                - تقویت و شادابی پوست<br>#}
+{#                                - ایجاد آرامش و کاهش استرس<br>#}
+{#                                - خوشبو کننده طبیعی محیط<br>#}
+{#                                - مناسب برای مصارف خوراکی و آرایشی</p>#}
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="specifications">
+                        <table class="specs-table">
+                            <tr>
+                                <th>نام محصول</th>
+                                <td>{{ product.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>برند</th>
+                                <td>{{ product.brand }}</td>
+                            </tr>
+                            <tr>
+                                <th>دسته‌بندی</th>
+                                <td>{{ product.category}}</td>
+                            </tr>
+                            {% for specification in specifications %}
+                                <tr>
+                                    <th>{{ specification.title }}</th>
+                                    <td>{{ specification.value }}</td>
+                                </tr>
+                            {% endfor %}
+
+                        </table>
+                    </div>
+
+                    <div class="tab-pane" id="reviews">
+                        {#                        <div class="reviews-summary">#}
+                        {#                            <div class="average-rating">#}
+                        {#                                <div class="big-rating">۴.۸</div>#}
+                        {#                                <div class="stars">★★★★★</div>#}
+                        {#                                <div class="rating-text">عالی</div>#}
+                        {#                            </div>#}
+                        {#                            <button class="btn-light write-review-btn">نوشتن نظر</button>#}
+                        {#                        </div>#}
+
+                        <!-- بخش نظرات در product-detail.html -->
+                        <div class="comments-section" id="commentsSection">
+                            <div id="commentsList">
+                                <!-- کامنت 1 با ریپلای -->
+                                {% if comments %}
+                                    {% for comment in comments %}
+                                        <div class="comment-item">
+                                            <div class="comment-header" id="single-comment-box-{{ comment.id }}">
+                                                <strong>{{ comment.user }}</strong>
+                                                <span class="comment-date">{{ comment.created_at|to_shamsi }}</span>
+                                                {#                                                <div class="comment-rating">★★★★★</div>#}
+                                                <span class="reply-count">{{ comment.productcomment_set.all.count|to_persian_digits }} پاسخ</span>
+                                            </div>
+                                            <div class="comment-text">
+                                                {{ comment.comment }}
+                                            </div>
+
+                                            <!-- دکمه‌های عملیات -->
+                                            <div class="comment-actions">
+                                                <button class="reply-btn" onclick="fillParentID({{ comment.id }})">💬
+                                                    پاسخ
+                                                </button>
+                                                <button class="like-btn"
+                                                        onclick="likeComment({{ comment.id }}, 'products')">👍
+                                                    <span id="like-count-{{ comment.id }}">
+                                                        {{ comment.likecomment_set.count|to_persian_digits }}
+                                                    </span>
+                                                </button>
+                                            </div>
+
+                                            <!-- فرم ریپلای -->
+                                            <div class="reply-form-container">
+                                                <textarea rows="2" placeholder="پاسخ خود را بنویسید..."></textarea>
+                                                <div class="reply-actions">
+                                                    <button class="submit-reply">ثبت پاسخ</button>
+                                                    <button class="cancel-reply">لغو</button>
+                                                </div>
+                                            </div>
+
+                                            <!-- لیست ریپلای‌ها -->
+                                            {% if comment.productcomment_set %}
+                                                <div class="replies-container">
+                                                    {% for repComment in comment.productcomment_set.all %}
+                                                        <div class="reply-item">
+                                                            <div class="reply-to">پاسخ به
+                                                                <span>{{ comment.user }}</span></div>
+                                                            <div class="reply-header">
+                                                                <strong>{{ repComment.user }}</strong>
+                                                                <span class="reply-date">{{ repComment.created_at|to_shamsi }}</span>
+                                                            </div>
+                                                            <div class="reply-text">
+                                                                {{ repComment.comment }}
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+
+                            <!-- فرم ثبت نظر جدید -->
+                            {% if request.user.is_authenticated %}
+                                <form method="post" id="comment-form">
+                                    <div class="add-comment-form">
+                                        <h4>نظر خود را بنویسید</h4>
+                                        {#                                    <textarea id="newComment" rows="3" placeholder="نظر خود را بنویسید..."></textarea>#}
+                                        {% csrf_token %}
+                                        <input type="hidden" id="comment-parent-id" value="">
+                                        {{ comment_form.comment }}
+                                        <button type="button" class="btn-light"
+                                                onclick="addProductComment({{ product.id }})">ثبت نظر
+                                        </button>
+                                    </div>
+                                </form>
+                            {% else %}
+                                <p>برای ثبت نظر ابتدا <a href="{% url 'login_page' %}">وارد</a> شوید</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block footer_references %}
+	<script src="{% static 'lib/img-lightbox/js/lightbox.min.js' %}"></script>
+    <script src="{% static 'lib/img-lightbox/js/lightbox-plus-jquery.min.js' %}"></script>
+{% endblock %}

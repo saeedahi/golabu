@@ -1,0 +1,47 @@
+{% load render_partial %}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>{% block title %}{% endblock %}</title>
+    {% include 'header_references.html' %}
+    {% block header_references %}{% endblock %}
+</head>
+<body>
+{% if messages %}
+    <div class="toast-container">
+        {% for message in messages %}
+            <div class="toast toast-{{ message.tags }}">
+            <span class="toast-icon">
+                {% if message.tags == "success" %}
+                    ✅
+                {% elif message.tags == "error" %}
+                    ❌
+                {% elif message.tags == "warning" %}
+                    ⚠️
+                {% else %}
+                    ℹ️
+                {% endif %}
+            </span>
+
+                <span class="toast-message">
+                {{ message }}
+            </span>
+
+                <button class="toast-close">&times;</button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% render_partial 'home_module.views.header_partial' %}
+
+{% block content %}{% endblock %}
+
+{% render_partial 'home_module.views.footer_partial' %}
+
+{% include 'footer_references.html' %}
+{% block footer_references %}{% endblock %}
+</body>
+</html>

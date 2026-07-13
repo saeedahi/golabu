@@ -1,0 +1,33 @@
+{% load persian_filters %}
+
+<div id="cartItems">
+    {% if order.orderdetail_set.exists %}
+        {% for detail in order.orderdetail_set.all %}
+            <div class="cart-item">
+                <div class="cart-item-info">
+                    <span class="cart-item-emoji">🌸</span>
+                    <div>
+                        <div class="cart-item-name">{{ detail.product.name }}</div>
+                        <div class="cart-item-price">{{ detail.product.price|to_persian_digits }} تومان</div>
+                    </div>
+                    <div class="number-of-product">تعداد :
+                        <button class="qty-btn qty-increase" onclick="changeOrderDetailCount({{ detail.id }}, 'increase')">+</button>
+                        <input type="number" class="product-quantity"
+                               value="{{ detail.count }}"
+                               min="1" max="99" id="product_count_{{ detail.id }}">
+                        <button class="qty-btn qty-increase" onclick="changeOrderDetailCount({{ detail.id }}, 'decrease')">-</button>
+                    </div>
+                </div>
+                <button onclick="removeOrderDetail({{ detail.id }})" class="remove-from-cart" data-index="0">❌</button>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-cart">🛒 سبد خرید شما خالی است</div>
+    {% endif %}
+</div>
+<div id="cartTotal">
+    <div class="cart-total">مجموع: {{ sum | to_persian_digits }} تومان</div>
+</div>
+<div class="checkout-button">
+    <a href="checkout.html" class="btn">نهایی کردن سفارش</a>
+</div>
