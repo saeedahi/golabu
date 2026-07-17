@@ -19,7 +19,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from django.http import HttpResponse
+
+def test_view(request):
+    return HttpResponse("TEST URL")
+
 urlpatterns = [
+    path("test123/", test_view),
     path('admin/', admin.site.urls),
     path('', include('home_module.urls')),
     path('products/', include('products_module.urls')),
