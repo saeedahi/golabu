@@ -194,8 +194,24 @@ body {
     padding: 0;
 }
 
+.coming-soon {
+    position: absolute;
+    top: -15px;
+    left: -20px; /* در صورت نیاز تغییر بده */
+    background: #ff4d4f;
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
 .nav-menu li {
     margin: 0;
+}
+
+.nav-menu li a {
+    position: relative;
 }
 
 .nav-menu a {

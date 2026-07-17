@@ -28,10 +28,10 @@ urlpatterns = [
     path("test123/", test_view),
     path('admin/', admin.site.urls),
     path('', include('home_module.urls')),
-    path('products/', include('products_module.urls')),
+    # path('products/', include('products_module.urls')),
     path('user/', include('user_module.urls')),
     path('blog/', include('articles_module.urls')),
     path('contact_us/', include('contact_us.urls')),
     path('search/', include('site_module.urls')),
-    path('order/', include('order_module.urls')),
+    # path('order/', include('order_module.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
