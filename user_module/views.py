@@ -27,6 +27,7 @@ class RegisterView(View):
             user = User(
                 first_name=register_form.cleaned_data['first_name'],
                 last_name=register_form.cleaned_data['last_name'],
+                username=register_form.cleaned_data['username'],
                 phone_number=register_form.cleaned_data['phone_number'],
                 email=register_form.cleaned_data['email'],
                 active_phone_number=str(randrange(100000, 999999)),

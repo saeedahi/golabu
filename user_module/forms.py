@@ -3,7 +3,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core import validators
 from django.core.exceptions import ValidationError
 from iranian_cities.models import Province, County
-
+import re
 from user_module.models import User, UserAddress
 
 
@@ -27,6 +27,13 @@ class RegisterForm(forms.Form):
         validators=[
             validators.MaxLengthValidator(100),
         ]
+    )
+    username = forms.CharField(
+        label='نام کاربری',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'نام کاربری'
+        })
     )
     phone_number = forms.CharField(
         label='شماره موبایل',
@@ -57,10 +64,6 @@ class RegisterForm(forms.Form):
             'class': 'form-control',
             'placeholder': 'رمز عبور'
         }),
-        validators=[
-            validators.MinLengthValidator(8),
-            validators.RegexValidator(regex=r'[a-zA-z0-9]$', message='رمز عبور ایمن نیست')
-        ]
     )
     confirm_password = forms.CharField(
         label='تکرار رمز عبور',
@@ -73,13 +76,26 @@ class RegisterForm(forms.Form):
         ]
     )
 
-    def clean_confirm_password(self):
-        password = self.cleaned_data['password']
-        confirm_password = self.cleaned_data['confirm_password']
-        if password == confirm_password:
-            return confirm_password
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if re.fullmatch(r"[A-Za-z0-9._-]+", username):
+            return username
 
-        raise ValidationError('رمز عبور و تکرار رمز عبور مغایرت دارند')
+        raise ValidationError('نام کاربری باید ترکیبی از حروف انگلیسی بزرگ و کوچک واعداد و (. - _) باشد ')
+
+    def clean(self):
+        cleaned_data = super(RegisterForm, self).clean()
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
+        if password and confirm_password and password != confirm_password:
+            self.add_error('confirm_password', 'رمز عبور و تکرار آن مغایرت دارند')
+
+        return cleaned_data
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        validate_password(password)
+        return password
 
     def clean_phone_number(self):
         phone_number = self.cleaned_data['phone_number']
