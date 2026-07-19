@@ -3,6 +3,7 @@ from articles_module import views
 
 urlpatterns = [
     path('', views.ArticleListView.as_view(), name='articles_page'),
+    path('cat/',views.filter_articles, name='filter_articles'),
     path('add-comment/', views.add_comment, name='add_comment'),
     path('like/', views.like_comment, name='like_comment'),
     path('tag/<str:tag>/', views.ArticleListView.as_view(), name='article_tag_page'),

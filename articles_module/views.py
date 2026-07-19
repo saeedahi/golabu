@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpRequest, HttpResponse
+from django.template.loader import render_to_string
 from django.views.generic import ListView, DetailView
 from django.shortcuts import render, get_object_or_404
 from articles_module.forms import ArticleCommentForm
@@ -61,6 +62,26 @@ class ArticleDetailView(DetailView):
 
         # print(article.content)
         return context
+
+
+def filter_articles(request):
+    cat_id = request.GET.get('cat_id')
+    print(cat_id)
+    if cat_id is None:
+        return JsonResponse({
+            'status': 'not-available',
+        })
+
+    articles = ArticleModel.objects.filter(category_id=cat_id)
+    context = {
+        'article_list': articles,
+    }
+
+    data = render_to_string('articles_module/includes/articles_components.html', context)
+    return JsonResponse({
+        'status': 'ok',
+        'data': data
+    })
 
 
 @login_required

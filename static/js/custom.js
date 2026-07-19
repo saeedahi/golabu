@@ -116,8 +116,8 @@ function validatePassword() {
     );
 }
 
-// password.addEventListener("input", validatePassword);
-// confirmPassword.addEventListener("input", validatePassword);
+password.addEventListener("input", validatePassword);
+confirmPassword.addEventListener("input", validatePassword);
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -222,6 +222,16 @@ function changeOrderDetailCount(detailId, state) {
     $.get('/order/cart/change-order-count?detail_id=' + detailId + '&state=' + state).then(res => {
         if(res.status === 'success') {
             $('#cart-detail').html(res.data);
+        }
+    })
+}
+
+
+function articleCat(catId) {
+    console.log(catId);
+    $.get('/blog/cat?cat_id=' + catId).then(res => {
+        if(res.status === 'ok') {
+            $('#article_list').html(res.data);
         }
     })
 }

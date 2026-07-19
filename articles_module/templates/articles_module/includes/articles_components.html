@@ -1,0 +1,33 @@
+{% load persian_filters %}
+
+
+{% if article_list %}
+    {% for article in article_list %}
+        <article class="blog-card" data-category="{{ article.category }}">
+            <div class="blog-image">
+                <img src="{{ article.image.url }}" alt="{{ article.title }}">
+                <span class="blog-date-badge">{{ article.created_at|to_shamsi }}</span>
+            </div>
+            <div class="blog-content">
+                <span class="blog-category">🌹 {{ article.category }}</span>
+                <h3 class="blog-title">{{ article.title }}</h3>
+                <p class="blog-excerpt">{{ article.excerpt }}</p>
+                <div class="blog-meta">
+                    <span class="blog-author">
+                        <span class="avatar">👤</span>
+                        {{ article.author }}
+                    </span>
+                    <span>⏱️ {{ article.reading_time|to_persian_digits }} دقیقه مطالعه</span>
+                    <a href="{% url 'article_detail_page' slug=article.slug %}" class="read-more">بیشتر بخوانید ←</a>
+                </div>
+                <div class="blog-tags">
+                    {% for tag in article.tag.all %}
+                        <a href="{% url 'article_tag_page' tag=tag.in_url %}" class="tag">#{{ tag.in_url }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </article>
+    {% endfor %}
+{% else %}
+    <p>در این دسته بندی مقاله ای وجود ندارد</p>
+{% endif %}
