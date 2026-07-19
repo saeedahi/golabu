@@ -227,8 +227,12 @@ function changeOrderDetailCount(detailId, state) {
 }
 
 
-function articleCat(catId) {
-    console.log(catId);
+function articleCat(btn, catId) {
+    document.querySelectorAll(".blog-cat-btn").forEach(button => {
+        button.classList.remove("active");
+    });
+
+    btn.classList.add("active");
     $.get('/blog/cat?cat_id=' + catId).then(res => {
         if(res.status === 'ok') {
             $('#article_list').html(res.data);

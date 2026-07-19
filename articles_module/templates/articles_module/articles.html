@@ -12,18 +12,10 @@
             <p class="blog-subtitle">جدیدترین مقالات و مطالب تخصصی درباره گلاب، عرقیات و سلامتی</p>
         </div>
 
-        <div class="blog-categories-filter">
+        <div class="blog-categories-filter" id="article_cat_filter">
             {% for cat in categories %}
-            	<button class="blog-cat-btn" onclick="articleCat({{ cat.id }})">🌹 {{ cat.title }}</button>
+            	<button class="blog-cat-btn" onclick="articleCat(this, {{ cat.id }})">🌹 {{ cat.title }}</button>
             {% endfor %}
-{#            #}
-{#            <button class="blog-cat-btn active" data-cat="all">همه مقالات</button>#}
-{#            <button class="blog-cat-btn" data-cat="خواص گلاب">🌹 خواص گلاب</button>#}
-{#            <button class="blog-cat-btn" data-cat="راهنمای خرید">🛍️ راهنمای خرید</button>#}
-{#            <button class="blog-cat-btn" data-cat="تاریخچه">📜 تاریخچه</button>#}
-{#            <button class="blog-cat-btn" data-cat="آشپزی">🍰 آشپزی</button>#}
-{#            <button class="blog-cat-btn" data-cat="سلامتی">💆 سلامتی</button>#}
-{#            <button class="blog-cat-btn" data-cat="تولید">🏭 تولید</button>#}
         </div>
 
         <div class="blog-grid" id="article_list">
