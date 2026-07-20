@@ -3,8 +3,10 @@ from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.http import Http404
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
 from django.views import View
 from iranian_cities.models import County
@@ -13,6 +15,9 @@ from user_module.forms import RegisterForm, VerificationForm, LoginForm, EditPro
     AddressModelForm
 from user_module.models import User, UserAddress
 from django.contrib import messages
+
+from utils.email_service import send_email
+
 
 # Create your views here.
 
@@ -30,15 +35,16 @@ class RegisterView(View):
                 username=register_form.cleaned_data['username'],
                 phone_number=register_form.cleaned_data['phone_number'],
                 email=register_form.cleaned_data['email'],
-                active_phone_number=str(randrange(100000, 999999)),
+                email_active_code=get_random_string(72),
                 is_active=False,
             )
             user.set_password(register_form.cleaned_data['password'])
             user.save()
             request.session['user_id'] = user.id
-            return redirect(reverse('verification_page'))
+            send_email('فعالسازی حساب کاربری', user.email, {'user': user}, 'email/activate_account.html')
+            return redirect(reverse('login_page'))
 
-        print(register_form.errors)
+        # print(register_form.errors)
 
         return render(request, 'user_module/register.html', {'form': register_form})
 
@@ -61,6 +67,17 @@ def verify_password(request):
             raise ValidationError('کاربر موجود نیست')
         return render(request, 'user_module/verify_phone_number.html', {'verify_ph': verify_ph})
 
+
+class ActivateAccountView(View):
+    def get(self, request, email_active_code):
+        user = User.objects.filter(email_active_code=email_active_code).first()
+        if user is not None:
+            if not user.is_active:
+                user.is_active = True
+                user.save()
+                return redirect(reverse('login_page'))
+
+        raise Http404
 
 class LoginView(View):
     def get(self, request):
