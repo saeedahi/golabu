@@ -12,7 +12,7 @@ from django.views import View
 from iranian_cities.models import County
 
 from user_module.forms import RegisterForm, VerificationForm, LoginForm, EditProfileModelForm, ChangePasswordForm, \
-    AddressModelForm
+    AddressModelForm, EmailForm, ResetPassForm
 from user_module.models import User, UserAddress
 from django.contrib import messages
 
@@ -133,6 +133,7 @@ class ProfileView(View):
         return render(request, 'user_module/edit_profile.html', context)
 
 
+@method_decorator(login_required, name='dispatch')
 class EditInfoView(View):
 
     def post(self, request):
@@ -157,6 +158,8 @@ class EditInfoView(View):
         }
         return render(request, 'user_module/edit_profile.html', context)
 
+
+@method_decorator(login_required, name='dispatch')
 class ChangePasswordView(View):
 
     def post(self, request):
@@ -190,6 +193,7 @@ class ChangePasswordView(View):
         return render(request, 'user_module/edit_profile.html', context)
 
 
+@method_decorator(login_required, name='dispatch')
 class EditAddressView(View):
     def post(self, request):
         current_user = User.objects.get(id=request.user.id)
@@ -223,6 +227,70 @@ class EditAddressView(View):
         }
 
         return render(request, 'user_module/edit_profile.html', context)
+
+
+class EmailForResPass(View):
+    def get(self, request):
+        email_form = EmailForm()
+        context = {
+            'email': email_form
+        }
+        return render(request, 'user_module/send_email_for_reset_pass.html', context)
+
+    def post(self, request):
+        email_form = EmailForm(request.POST)
+        if email_form.is_valid():
+            email = email_form.cleaned_data['email']
+            user: User = User.objects.filter(email__iexact=email).first()
+            if user is not None:
+                active_code = get_random_string(72)
+                user.email_active_code = active_code
+                user.save()
+                request.session['email'] = email
+                send_email('فعالسازی حساب کاربری', user.email, {'user': user}, 'email/email_for_reset_pass.html')
+                return redirect(reverse('home-page'))
+
+            email_form.add_error('email', 'ایمیل وارد شده معتبر نمیباشد')
+
+        context = {
+            'email': email_form
+        }
+
+        return render(request, 'user_module/send_email_for_reset_pass.html', context)
+
+
+class ResetPasswordView(View):
+    def get(self, request, email_active_code):
+        email = request.session['email']
+        user: User = User.objects.filter(email_active_code__iexact=email_active_code, email=email).first()
+        if user:
+            reset_pass_form = ResetPassForm()
+            context = {
+                'reset_pass_form': reset_pass_form,
+                'email_active_code': email_active_code,
+            }
+            return render(request, 'user_module/reset_pass.html', context)
+
+        return redirect(reverse('home-page'))
+
+    def post(self, request, email_active_code):
+        reset_pass_form = ResetPassForm(request.POST)
+        if reset_pass_form.is_valid():
+            email = request.session['email']
+            user: User = User.objects.filter(email_active_code__iexact=email_active_code, email=email).first()
+            new_pass = reset_pass_form.cleaned_data['new_password']
+            user.set_password(new_pass)
+            new_active_code = get_random_string(72)
+            user.email_active_code = new_active_code
+            user.save()
+            return redirect(reverse('login_page'))
+
+        context = {
+            'reset_pass_form': reset_pass_form,
+            'email_active_code': email_active_code,
+        }
+        return render(request, 'user_module/reset_pass.html', context)
+
 
 
 def load_counties(request):

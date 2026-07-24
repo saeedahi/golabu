@@ -327,3 +327,51 @@ class AddressModelForm(forms.ModelForm):
             self.fields['county'].queryset = County.objects.filter(
                 province_id=self.instance.province_id
             )
+
+
+class EmailForm(forms.Form):
+    email = forms.EmailField(
+        label='ایمیل',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'ایمیل'
+        }),
+        validators=[
+            validators.MaxLengthValidator(100),
+            validators.EmailValidator,
+        ]
+    )
+
+
+class ResetPassForm(forms.Form):
+    new_password = forms.CharField(
+        label='رمز عبور جدید',
+        widget=forms.PasswordInput(attrs={
+            'id': 'password',
+            'class': 'form-control',
+            'placeholder': 'رمز عبور جدید را وارد کنید'
+        })
+    )
+    new_password_confirm = forms.CharField(
+        label='تکرار رمز عبور جدید',
+        widget=forms.PasswordInput(attrs={
+            'id': 'confirm_password',
+            'class': 'form-control',
+            'placeholder': 'رمز عبور جدید را مجدداً وارد کنید'
+        })
+    )
+
+    def clean_new_password(self):
+        new_password = self.cleaned_data['new_password']
+        validate_password(new_password)
+        return new_password
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("new_password")
+        confirm = cleaned_data.get("new_password_confirm")
+
+        if password and confirm and password != confirm:
+            raise ValidationError("رمزهای عبور با هم مطابقت ندارند.")
+
+        return cleaned_data

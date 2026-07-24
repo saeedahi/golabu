@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    گلابو | بازیابی رمز عبور
+{% endblock %}
+
+{% block content %}
+    <main>
+        <div class="container">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <div class="auth-tab" data-tab="login">بازیابی رمز عبور</div>
+                </div>
+
+                <form method="post" action="{% url 'reset_password_page' email_active_code=email_active_code %}">
+                    {% csrf_token %}
+                    <div class="auth-form " id="register-form">
+                        <div class="form-group">
+                            {{ reset_pass_form }}
+                            <ul>
+                                <li>رمز عبور یاید حداقل 8 کاراکتر داشته باشد</li>
+                                <li>دارای حداقل یک حروف بزرگ باشد</li>
+                                <li>دارای حروف کوچک باشد</li>
+                                <li>دارای حداقل یک عدد باشد</li>
+                                <li>دارای حداقل یکی از این کاراکترها باشد : !@#$%^&*</li>
+                            </ul>
+                            <button class="btn auth-btn">تغییر رمز عبور</button>
+
+                            <div class="auth-note">
+                                با ثبت‌نام، شرایط و قوانین گلابو را می‌پذیرید
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+{% endblock %}

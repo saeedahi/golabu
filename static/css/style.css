@@ -1575,6 +1575,11 @@ body {
     box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
 }
 
+.auth-container .for-login {
+    padding-top: 10px;
+    text-align: center;
+}
+
 .auth-tabs {
     display: flex;
     gap: 30px;
